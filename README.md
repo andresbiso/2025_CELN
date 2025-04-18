@@ -60,6 +60,14 @@ brew install --cask virtualbox
 
 Puede que en el paso tres se agreguen más opciones. Con esto tendríamos los mínimo necesario para levantar los ejercicios.
 
+## Problemas Conocidos
+
+### Error de user en Docker al iniciar minikube
+1. sudo groupadd docker
+2. sudo usermod -aG docker $USER
+3. newgrp docker
+
+
 # :speech_balloon: Autor <a name = "author"></a>
 
 - [@andresbiso](https://github.com/andresbiso)
