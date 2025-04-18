@@ -50,7 +50,7 @@ brew install --cask virtualbox
     2. Configurar clipboard compartido: https://superuser.com/questions/42134/how-do-i-enable-the-shared-clipboard-in-virtualbox
     3. Configurar carpeta compartida: https://askubuntu.com/questions/161759/how-to-access-a-shared-folder-in-virtualbox
 9. Instalar docker: https://docs.docker.com/engine/install/ubuntu/
-10. Instalar kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+10. Instalar kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
 11. Instalar minikube: https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fdebian+package
 
 ## ¿Cómo levantar los ejercicios?
