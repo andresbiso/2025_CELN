@@ -47,6 +47,8 @@ brew install --cask virtualbox
     2. Navegar en una terminal a esa ruta y ejecutar: sudo ./VBoxLinuxAdditions.run
 8. Configurar usuario: sudo adduser nube vboxsf
     1. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
+    2. Configurar clipboard compartido: https://superuser.com/questions/42134/how-do-i-enable-the-shared-clipboard-in-virtualbox
+    3. Configurar carpeta compartida: https://askubuntu.com/questions/161759/how-to-access-a-shared-folder-in-virtualbox
 9. Instalar docker: https://docs.docker.com/engine/install/
 10. Instalar kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 11. Instalar minikube: https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fbinary+download
