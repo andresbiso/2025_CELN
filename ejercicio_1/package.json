@@ -1,0 +1,23 @@
+{
+  "name": "ejercicio_1",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">     Computación en la Nube y Procesamiento Distribuido - UP     <br>     1C - 2025     <br> </p>",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andresbiso/2025_CELN.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andresbiso/2025_CELN/issues"
+  },
+  "homepage": "https://github.com/andresbiso/2025_CELN#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

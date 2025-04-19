@@ -34,39 +34,42 @@ brew install --cask virtualbox
 - Instalar el VirtualBox Extension Pack: https://www.virtualbox.org/wiki/Downloads
 
 ## ¿Cómo configurar el entorno?
+
 1. Crear VDI con 45GB e indicar que ocupe todo el espacio.
 2. Descargar e instalar Ubuntu LTS (amd64).
-    1. Importante indicarle 4GiB de memoria RAM y 1 CPU core.
-    2. Configurarlo con 128 MB de memoria gráfica.
-    3. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles)
-4. Una vez finalizada la instalación, modificar la vm para que use dos cpu cores.
-5. Instalar herramientas: build-essential, curl.
-6. Instalar snaps (App Center): visual studio code, postman.
-7. Instalar Guest Additions de virtualbox en la vm.
-    1. La iso se monta en /media/nube/VBox_GAs_x.y.z
-    2. Navegar en una terminal a esa ruta y ejecutar: sudo ./VBoxLinuxAdditions.run
-8. Configurar usuario: sudo adduser nube vboxsf
-    1. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
-    2. Configurar clipboard compartido: https://superuser.com/questions/42134/how-do-i-enable-the-shared-clipboard-in-virtualbox
-    3. Configurar carpeta compartida: https://askubuntu.com/questions/161759/how-to-access-a-shared-folder-in-virtualbox
-9. Instalar docker: https://docs.docker.com/engine/install/ubuntu/
-10. Instalar kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
-11. Instalar minikube: https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fdebian+package
+   1. Importante indicarle 4GiB de memoria RAM y 1 CPU core.
+   2. Configurarlo con 128 MB de memoria gráfica.
+   3. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles)
+3. Una vez finalizada la instalación, modificar la vm para que use dos cpu cores.
+4. Instalar herramientas: build-essential, curl.
+5. Instalar snaps (App Center): visual studio code, postman.
+6. Instalar Guest Additions de virtualbox en la vm.
+   1. La iso se monta en /media/nube/VBox_GAs_x.y.z
+   2. Navegar en una terminal a esa ruta y ejecutar: sudo ./VBoxLinuxAdditions.run
+7. Configurar usuario: sudo adduser nube vboxsf
+   1. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
+   2. Configurar clipboard compartido: https://superuser.com/questions/42134/how-do-i-enable-the-shared-clipboard-in-virtualbox
+   3. Configurar carpeta compartida: https://askubuntu.com/questions/161759/how-to-access-a-shared-folder-in-virtualbox
+8. Instalar docker: https://docs.docker.com/engine/install/ubuntu/
+9. Instalar kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
+10. Instalar minikube: https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fdebian+package
+11. En una terminal ejecutar: `sudo usermod -aG docker $USER && newgrp docker`
 
-## ¿Cómo levantar los ejercicios?
-1. Abrir una terminal para ejecutar los comandos.
-2. Ejecutar: eval $(minikube docker-env)
-3. Ejecutar: minikube start --driver=docker
+## ¿Cómo levantar el entorno (minikube)?
+
+1. Abrir una terminal.
+2. Ejecutar: `eval $(minikube docker-env)`
+3. Ejecutar: `minikube start --driver=docker`
 
 Puede que en el paso tres se agreguen más opciones. Con esto tendríamos los mínimo necesario para levantar los ejercicios.
 
 ## Problemas Conocidos
 
 ### Error de user en Docker al iniciar minikube
-1. sudo groupadd docker
-2. sudo usermod -aG docker $USER
-3. newgrp docker
 
+```bash
+sudo usermod -aG docker $USER && newgrp docker
+```
 
 # :speech_balloon: Autor <a name = "author"></a>
 
