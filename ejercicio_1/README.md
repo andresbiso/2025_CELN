@@ -140,6 +140,62 @@ kubectl expose deployment myapp --type=NodePort --port=3000
 
 13. Testear el deployment
 
+Browser:
+
 ```bash
 minikube service myapp --url
 ```
+
+Terminal:
+
+```bash
+curl <url>
+```
+
+14. Cleanup de recursos
+
+```bash
+minikube dashboard # Revisar los recursos asociados
+```
+
+```bash
+kubectl get deployments # Revisar los deployments
+kubectl delete deployment <deployment_name>
+```
+
+```bash
+kubectl get services # Revisar los services
+kubectl delete service <service_name>
+```
+
+```bash
+kubectl get configmaps # Revisar los config maps
+kubectl delete configmap <configmap_name>
+```
+
+```bash
+kubectl get pvc # Revisar los persistent volume claims
+kubectl delete pvc <pvc_name>
+```
+
+```bash
+kubectl get secrets # Revisar los secrets
+kubectl delete secret <secret_name>
+```
+
+```bash
+kubectl get pv # Revisar los persistent volumes
+kubectl delete pv <pv_name>
+```
+
+```bash
+# Eliminar imagen de docker generada
+docker image ls
+docker image rm <repository:tag>
+```
+
+```bash
+minikube stop
+```
+
+- Más información: https://www.educative.io/blog/kubernetes-deployments-pods-services

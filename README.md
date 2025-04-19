@@ -71,6 +71,15 @@ Puede que en el paso tres se agreguen más opciones. Con esto tendríamos los m�
 sudo usermod -aG docker $USER && newgrp docker
 ```
 
+### Problemas con archivos YAML
+
+- Validar archivos en el siguiente sitio: https://codebeautify.org/yaml-validator
+
+## Convertir a Base64
+
+- https://cyberchef.io/
+- Linux: `echo -n "value" | base64`
+
 # :speech_balloon: Autor <a name = "author"></a>
 
 - [@andresbiso](https://github.com/andresbiso)
@@ -79,3 +88,4 @@ sudo usermod -aG docker $USER && newgrp docker
 
 - https://github.com/github/gitignore
 - https://gist.github.com/rxaviers/7360908 -> github emojis
+- https://gist.github.com/Myndex/5140d6fe98519bb15c503c490e713233 -> github flavored markdown cheat sheet
