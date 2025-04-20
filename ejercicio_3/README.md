@@ -287,7 +287,7 @@ kubectl apply -f mysql-statefulset.yaml -n guestbook-ha
 
 ### f. Crear esquema de base de datos y datos
 
-- Esperar a que el Pod mysql-db-0 se esté ejecutándo (STATUS=Running): `kubectl get pods -n guestbook-ha -l app=mysql-db`
+- Esperar a que el Pod mysql-db-0 se esté ejecutando (STATUS=Running): `kubectl get pods -n guestbook-ha -l app=mysql-db`
 
 Guardar el nombre del pod de MySQL en una variable para facilitar el uso:
 
