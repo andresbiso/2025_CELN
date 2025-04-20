@@ -35,6 +35,57 @@ Avanzado
 2. Server (Node.js/Express): Una API simple que se conecta a la base de datos PostgreSQL para recuperar/almacenar datos. Se ejecuta en una implementación con múltiples réplicas.
 3. Base de datos (PostgreSQL): Almacena datos de la aplicación. Se ejecuta como StatefulSet con PersistentVolumeClaim.
 
+## Comentario Previo
+
+En la guía van a poder observar que se hace uso de un registry para la carga de imágenes.
+Es importante aclarar que see pueden cargar las imágenes sin necesidad de un registry. Lo dejé de este manera ya que fue la forma que mejor me funcionó con un multinode-cluster.
+
+Pasos que se modifican de la guía:
+
+Levantar minikube:
+
+```bash
+eval $(minikube docker-env)
+minikube start --driver=docker --nodes=3 --profile=multinode-cluster
+```
+
+> [!NOTE]
+> No hace falta hacer port forwarding.
+
+Crear imágenes:
+En el directorio de la aplicación backend:
+
+```bash
+docker build -t backend-api:v1 .
+```
+
+En el directorio de aplicaciones frontend:
+
+```bash
+docker build -t frontend-web:v1 .
+```
+
+Cargar imágenes:
+
+```bash
+minikube image load backend-api:v1 --profile=multinode-cluster
+minikube image load frontend-web:v1 --profile=multinode-cluster
+```
+
+Modificar archivo backend-api-deployment.yaml:
+
+```yaml
+image: backend-api:v1 # Your built image
+imagePullPolicy: Never # If using local image loaded into Minikube
+```
+
+Modificar archivo frontend-deployment.yaml:
+
+```yaml
+image: frontend-web:v1 # Your built image
+imagePullPolicy: Never # If using local image loaded into Minikube
+```
+
 ## Paso 1
 
 ### a. Levantar minikube con configuración inicial
