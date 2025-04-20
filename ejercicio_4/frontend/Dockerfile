@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y libpq-dev
 # Install extensions
 # pgsql for direct DB access
 
-RUN docker-php-ext-install curl pdo pdo_pgsql
+RUN docker-php-ext-install pdo pdo_pgsql
 
 # Ensure Apache permissions are correct (usually handled by base image)
 

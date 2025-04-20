@@ -1,6 +1,6 @@
 # Ejercicio 4
 
-- Implementación de una aplicación de varios niveles con HA y simulación de topología.
+Implementación de una aplicación de varios niveles con HA y simulación de topología.
 
 ## Meta
 
@@ -116,7 +116,7 @@ kubectl apply -f api-configmap.yaml -n multi-tier-app
 
 ## Paso 2 - Preparar el código de la aplicación y las imágenes de Docker
 
-- Crear dos directorios: backend y frontend.
+Crear dos directorios: backend y frontend.
 
 ### Aplicación backend (directorio de aplicaciones backend)
 
@@ -209,6 +209,7 @@ CMD [ "node", "server.js" ]
 
 > [!IMPORTANT]  
 > Correr npm install en el directorio de la aplicación backend. Si no está instalado npm, correr sudo apt install npm.
+> Esto debería generar el archivo package-lock.json.
 
 ### Aplicación frontend (directorio de aplicaciones frontend)
 
@@ -335,7 +336,7 @@ minikube image load frontend-web:v1
 
 ## Paso 3 - Implementar la base de datos (StatefulSet)
 
-- Tener en cuenta el enlace serviceName al Headless Service y volumeClaimTemplates.
+Tener en cuenta el enlace serviceName al Headless Service y volumeClaimTemplates.
 
 Crear postgres-statefulset.yaml:
 
@@ -495,8 +496,8 @@ INSERT INTO items (name) VALUES ('Sample Item 1'), ('Sample Item 2');
 
 ## Paso 4 - Implementar la API de backend
 
-- Réplicas: 2.
-- Límites de recursos, probes, uso de configuración/secreto y topologySpreadConstraints.
+Réplicas: 2.
+Límites de recursos, probes, uso de configuración/secreto y topologySpreadConstraints.
 
 Crear backend-api-deployment.yaml:
 
@@ -601,7 +602,7 @@ kubectl apply -f backend-api-deployment.yaml -n multi-tier-app
 
 ## Paso 5 - Implementar el Frontend
 
-- Esto implementa el contenedor Nginx que sirve HTML/JS estático.
+Esto implementa el contenedor Nginx que sirve HTML/JS estático.
 
 Crear frontend-deployment.yaml
 
