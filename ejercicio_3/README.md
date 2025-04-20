@@ -93,17 +93,22 @@ COPY index.php /var/www/html/
 RUN chmod 644 /var/www/html/index.php
 ```
 
-### c. Crear y enviar una imagen de Docker
+### c. Crear y cargar una imagen de Docker
 
 Dentro del directorio que contiene index.php y Dockerfile.
 
 ```bash
 docker build -t php-guestbook-ha:v1 .
+minikube image load php-guestbook-ha:v1
 ```
 
 ## Paso 3: Implementar una base de datos con estado (MySQL)
 ### a. Crear el SECRET de la base de datos
-Reemplazar YOUR_ROOT_PASSWORD y YOUR_APP_PASSWORD por contraseñas seguras. (Encodear los tres campos a base64 echo -n “your_password” | base64)
+Reemplazar ENC[user], ENC[passw] y ENC[rootpassw] por valores cifrados en base64.
+
+```bash
+echo -n “your_value” | base64
+```
 
 Crear mysql-credentials.yaml:
 
@@ -116,7 +121,7 @@ type: Opaque
 data:
   user: ENC[user] # Base64 encoded username
   password: ENC[passw] # Base64 encoded password
-  rootpassword: ENC[passw] # Base64 encoded rootpassword
+  rootpassword: ENC[rootpassw] # Base64 encoded rootpassword
 ```
 
 Aplicar:
@@ -174,7 +179,7 @@ Aplicar:
 kubectl apply -f mysql-headless-svc.yaml -n guestbook-ha
 ```
 
-### d. Definir el servicio ClusterIP para la aplicación:
+### d. Definir el servicio ClusterIP para la aplicación
 
 Crear mysql-svc.yaml:
 
@@ -200,9 +205,10 @@ kubectl apply -f mysql-svc.yaml -n guestbook-ha
 
 ### e. Definir MySQL StatefulSet
 
-Crear mysql-statefulset.yaml:
+> [!NOTE]  
+> No descomentar storageClassName.
 
-- No descomentar storageClassName.
+Crear mysql-statefulset.yaml:
 
 ```yaml
 apiVersion: apps/v1
@@ -281,7 +287,7 @@ kubectl apply -f mysql-statefulset.yaml -n guestbook-ha
 
 ### f. Crear esquema de base de datos y datos
 
-- Esperar a que el Pod mysql-db-0 se esté ejecutándo: `kubectl get pods -n guestbook-ha -l app=mysql-db`
+- Esperar a que el Pod mysql-db-0 se esté ejecutándo (STATUS=Running): `kubectl get pods -n guestbook-ha -l app=mysql-db`
 
 Guardar el nombre del pod de MySQL en una variable para facilitar el uso:
 
@@ -289,11 +295,16 @@ Guardar el nombre del pod de MySQL en una variable para facilitar el uso:
 MYSQL_POD=$(kubectl get pods -n guestbook-ha -l app=mysql-db -o jsonpath='{.items[0].metadata.name}')
 ```
 
-Ejecutar comandos SQL (el password pegado a la “p”) (Ej: -pnube)
+Ingresar al pod:
+
+- El password debe ir pegado a la “p”. Debe tener el mismo valor que el rootpassword del archivo mysql-credentials.yaml pero sin cifrar.
+- Ej: -pnube
 
 ```bash
 kubectl exec -it $MYSQL_POD -n guestbook-ha -- mysql -u root -pYOUR_ROOT_PASSWORD
 ```
+
+Ejecutar comandos SQL:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS guestbook;
@@ -307,7 +318,7 @@ message VARCHAR(255) NOT NULL
 INSERT INTO welcome_message (id, message) VALUES (1, 'Hello from Persistent MySQL!')
 ON DUPLICATE KEY UPDATE message='Hello from Persistent MySQL!';
 
-create user 'guestbook_user'@'%';
+create user 'guestbook_user'@'%'; --user can connect from any host
 
 quit;
 ```
@@ -392,7 +403,6 @@ kubectl apply -f php-deployment.yaml -n guestbook-ha
 Crear php-service.yaml:
 
 ```yaml
-# php-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -482,10 +492,23 @@ kubectl get pods -n guestbook-ha -w # verificar que se genere el reemplazo
 
 ## Paso 7: Realizar la limpieza
 
-- Elimina todos los recursos asociados eliminando el espacio de nombres.
+```bash
+minikube dashboard # Revisar los recursos asociados
+```
 
 ```bash
 kubectl delete namespace guestbook-ha
+# Eliminar todos los recursos asociados eliminando el espacio de nombres.
+```
+
+```bash
+# Eliminar imagen de docker generada
+docker image ls
+docker image rm <repository:tag>
+```
+
+```bash
+minikube stop
 ```
 
 > [!NOTE]  
