@@ -37,52 +37,47 @@ Avanzado
 
 ## Paso 1
 
-### a. Configurar el espacio de nombres
-
-```bash
-eval $(minikube docker-env)
-minikube start --driver=docker --nodes=3 --profile=multinode-cluster
-kubectl create namespace multi-tier-app
-```
-
-### b. Habilitar Registry
+### a. Levantar minikube con configuración inicial
 
 Al utilizar localmente un cluster con más de un nodo debemos hacer uso de un registry para poder cargar las imágenes de docker.
 
-Configurar docker para que pueda acceder al registry:
-
 ```bash
-minikube ip --profile=multinode-cluster # obtener ip del cluster
-sudo nano /etc/docker/daemon.json
-```
-
-```json
-{
-  "insecure-registries": ["<minikube-ip>:5000"]
-}
-```
-
-```bash
-sudo systemctl restart docker
-```
-
-En este momento, dado a que se reinicia el docker y se cae el minikube, tenemos que volver a correr los comandos del paso anterior.
-
-Habilitar registry en nuestro cluster:
-
-```bash
-minikube addons enable registry --profile=multinode-cluster
+eval $(minikube docker-env)
+minikube start --driver=docker --nodes=3 --profile=multinode-cluster --addons=registry --insecure-registry "10.0.0.0/24"
 ```
 
 Verificar que el registry esté configurado:
 
 ```bash
-kubectl get svc registry -n kube-system # Debería estar corriendo en el puerto 5000
-# Por si no se expone el puerto: kubectl edit svc registry -n kube-system
-kubectl get pods -n kube-system # Buscar por pods que sean del estulo registry-xxxx.
+kubectl get svc registry -n kube-system
+kubectl get pods -n kube-system | grep registry # Buscar por pods que sean del estilo registry-xxxx.
 ```
 
-### b. Secret de la base de datos
+Ejecutar lo siguientes comandos cada uno en una terminal separada. Quedan a la escucha de requests y hacen el forwarding.
+
+```bash
+kubectl port-forward --namespace kube-system svc/registry 5000:80
+# De esta manera podemos acceder al registry desde localhost:5000.
+```
+
+```bash
+docker run --rm -it --network=host alpine ash -c "apk add socat && socat TCP-LISTEN:5000,reuseaddr,fork TCP:$(minikube ip --profile=multinode-cluster):5000"
+# De esta manera docker puede hacer push y pull del registry.
+```
+
+> [!NOTE]
+> Más información sobre registry:
+>
+> 1. https://rifaterdemsahin.com/2024/10/30/%F0%9F%9A%80-setting-up-a-container-registry-in-minikube-a-step-by-step-guide-%F0%9F%90%B3/
+> 2. https://minikube.sigs.k8s.io/docs/handbook/registry/
+
+### b. Configurar el espacio de nombres
+
+```bash
+kubectl create namespace multi-tier-app
+```
+
+### c. Secret de la base de datos
 
 - Reemplazar los comodines con valores codificados en Base64
 - `echo -n 'value' | base64`
@@ -107,7 +102,7 @@ Aplicar:
 kubectl apply -f postgres-secret.yaml -n multi-tier-app
 ```
 
-### c. Mapa de configuración de la base de datos
+### d. Mapa de configuración de la base de datos
 
 Crear postgres-configmap.yaml:
 
@@ -127,7 +122,7 @@ Aplicar:
 kubectl apply -f postgres-configmap.yaml -n multi-tier-app
 ```
 
-### d. ConfigMap API
+### e. ConfigMap API
 
 - Esto le indica a la API de backend cómo llegar a la base de datos.
 
@@ -354,54 +349,34 @@ RUN chmod 644 /var/www/html/index.php
 En el directorio de la aplicación backend:
 
 ```bash
-docker build -t backend-api:v1 .
+docker build -t localhost:5000/backend-api:v1 .
 ```
 
 En el directorio de aplicaciones frontend:
 
 ```bash
-docker build -t frontend-web:v1 .
+docker build -t localhost:5000/frontend-web:v1 .
 ```
 
 ## Configurar Registry
 
-Crear tag de las imágenes:
-
-```bash
-docker tag backend-api:v1 $(minikube ip --profile=multinode-cluster):5000/backend-api:v1
-docker tag frontend-web:v1 $(minikube ip --profile=multinode-cluster):5000/frontend-web:v1
-```
-
 Subir imágenes al registry:
 
 ```bash
-docker push $(minikube ip --profile=multinode-cluster):5000/backend-api:v1
-docker push $(minikube ip --profile=multinode-cluster):5000/frontend-web:v1
+docker push localhost:5000/backend-api:v1
+docker push localhost:5000/frontend-web:v1
 ```
 
 Verificar que las imágenes se hayan subido al registry:
 
 ```bash
-minikube ip --profile=multinode-cluster # obtener ip del cluster
-curl <minikube-ip>:5000/v2/\_catalog
-```
-
-o
-
-```bash
-curl $(minikube ip --profile=multinode-cluster):5000/v2/\_catalog
-```
-
-Buscar ip interna del registry para el cluster:
-
-```bash
-kubectl get service registry -n kube-system
+curl localhost:5000/v2/\_catalog
 ```
 
 Modificar archivo backend-api-deployment.yaml:
 
 ```yaml
-image: <registry-cluster-ip>:5000/backend-api:v1
+image: localhost:5000/backend-api:v1
 imagePullPolicy: IfNotPresent
 # Use this to pull the image from the registry if it's not already present
 ```
@@ -409,18 +384,9 @@ imagePullPolicy: IfNotPresent
 Modificar archivo frontend-deployment.yaml:
 
 ```yaml
-image: <registry-cluster-ip>:5000/frontend-web:v1
+image: localhost:5000/frontend-web:v1
 imagePullPolicy: IfNotPresent
 # Use this to pull the image from the registry if it's not already present
-```
-
-### Cargar imágenes en Minikube (Solo para configuración con un solo nodo)
-
-Si no estamos utilizando una configuración con más de un nodo, ir por este camino.
-
-```bash
-minikube image load backend-api:v1
-minikube image load frontend-web:v1
 ```
 
 ## Paso 3 - Implementar la base de datos (StatefulSet)
@@ -621,8 +587,8 @@ spec:
     spec:
       containers:
         - name: backend-api
-          image: backend-api:v1 # Your built image
-          imagePullPolicy: Never # If using local image loaded into Minikube
+          image: localhost:5000/backend-api:v1 # Your built image
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3001 # Port defined in server.js
           env:
@@ -709,7 +675,7 @@ spec:
     - protocol: TCP
       port: 80 # Port service listens on
       targetPort: 80 # Port the Nginx container listens on
-      # nodePort: 30080 # Optional: Specify NodePort
+      nodePort: 30080 # Optional: Specify NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -728,8 +694,8 @@ spec:
     spec:
       containers:
         - name: frontend-web
-          image: frontend-web:v1 # Your built image
-          imagePullPolicy: Never # If using local image loaded into Minikube
+          image: localhost:5000/frontend-web:v1 # Your built image
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80 # Nginx default port
           resources:
@@ -781,7 +747,7 @@ kubectl get pods,svc,pvc,statefulset,deployment -n multi-tier-app -o wide
 ### Acceso a la interfaz
 
 ```bash
-minikube service frontend-service -n multi-tier-app --url
+minikube service frontend-service -n multi-tier-app --url --profile=multinode-cluster
 ```
 
 1. Abrir la URL en el navegador. Debería verse la página HTML.
@@ -798,6 +764,7 @@ minikube service frontend-service -n multi-tier-app --url
 kubectl get pods -n multi-tier-app
 kubectl logs <pod-name> -n multi-tier-app # Investigar problemas
 # Ejemplo: kubectl logs -l app=backend-api -n multi-tier-app --tail=50
+# Ejemplo: kubectl logs -l app=frontend-web -n multi-tier-app --tail=50
 ```
 
 ## Paso 7 - Discusión: Simulación multirregional

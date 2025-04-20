@@ -28,8 +28,8 @@ spec:
     spec:
       containers:
         - name: backend-api
-          image: 192.168.58.2:5000/backend-api:v1
-          imagePullPolicy: Always
+          image: localhost:5000/backend-api:v1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3001 # Port defined in server.js
           env:
