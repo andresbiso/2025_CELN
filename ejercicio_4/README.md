@@ -45,6 +45,43 @@ minikube start --driver=docker --nodes=3 --profile=multinode-cluster
 kubectl create namespace multi-tier-app
 ```
 
+### b. Habilitar Registry
+
+Al utilizar localmente un cluster con más de un nodo debemos hacer uso de un registry para poder cargar las imágenes de docker.
+
+Configurar docker para que pueda acceder al registry:
+
+```bash
+minikube ip --profile=multinode-cluster # obtener ip del cluster
+sudo nano /etc/docker/daemon.json
+```
+
+```json
+{
+  "insecure-registries": ["<minikube-ip>:5000"]
+}
+```
+
+```bash
+sudo systemctl restart docker
+```
+
+En este momento, dado a que se reinicia el docker y se cae el minikube, tenemos que volver a correr los comandos del paso anterior.
+
+Habilitar registry en nuestro cluster:
+
+```bash
+minikube addons enable registry --profile=multinode-cluster
+```
+
+Verificar que el registry esté configurado:
+
+```bash
+kubectl get svc registry -n kube-system # Debería estar corriendo en el puerto 5000
+# Por si no se expone el puerto: kubectl edit svc registry -n kube-system
+kubectl get pods -n kube-system # Buscar por pods que sean del estulo registry-xxxx.
+```
+
 ### b. Secret de la base de datos
 
 - Reemplazar los comodines con valores codificados en Base64
@@ -97,7 +134,6 @@ kubectl apply -f postgres-configmap.yaml -n multi-tier-app
 Crear api-configmap.yaml:
 
 ```yaml
-# api-configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -327,7 +363,60 @@ En el directorio de aplicaciones frontend:
 docker build -t frontend-web:v1 .
 ```
 
-### Cargar imágenes en Minikube
+## Configurar Registry
+
+Crear tag de las imágenes:
+
+```bash
+docker tag backend-api:v1 $(minikube ip --profile=multinode-cluster):5000/backend-api:v1
+docker tag frontend-web:v1 $(minikube ip --profile=multinode-cluster):5000/frontend-web:v1
+```
+
+Subir imágenes al registry:
+
+```bash
+docker push $(minikube ip --profile=multinode-cluster):5000/backend-api:v1
+docker push $(minikube ip --profile=multinode-cluster):5000/frontend-web:v1
+```
+
+Verificar que las imágenes se hayan subido al registry:
+
+```bash
+minikube ip --profile=multinode-cluster # obtener ip del cluster
+curl <minikube-ip>:5000/v2/\_catalog
+```
+
+o
+
+```bash
+curl $(minikube ip --profile=multinode-cluster):5000/v2/\_catalog
+```
+
+Buscar ip interna del registry para el cluster:
+
+```bash
+kubectl get service registry -n kube-system
+```
+
+Modificar archivo backend-api-deployment.yaml:
+
+```yaml
+image: <registry-cluster-ip>:5000/backend-api:v1
+imagePullPolicy: IfNotPresent
+# Use this to pull the image from the registry if it's not already present
+```
+
+Modificar archivo frontend-deployment.yaml:
+
+```yaml
+image: <registry-cluster-ip>:5000/frontend-web:v1
+imagePullPolicy: IfNotPresent
+# Use this to pull the image from the registry if it's not already present
+```
+
+### Cargar imágenes en Minikube (Solo para configuración con un solo nodo)
+
+Si no estamos utilizando una configuración con más de un nodo, ir por este camino.
 
 ```bash
 minikube image load backend-api:v1

@@ -28,8 +28,8 @@ spec:
     spec:
       containers:
         - name: backend-api
-          image: backend-api:v1 # Your built image
-          imagePullPolicy: Never # If using local image loaded into Minikube
+          image: 192.168.58.2:5000/backend-api:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 3001 # Port defined in server.js
           env:

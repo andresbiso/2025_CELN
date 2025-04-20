@@ -30,8 +30,8 @@ spec:
     spec:
       containers:
         - name: frontend-web
-          image: frontend-web:v1 # Your built image
-          imagePullPolicy: Never # If using local image loaded into Minikube
+          image: 192.168.58.2:5000/frontend-web:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 80 # Nginx default port
           resources:
