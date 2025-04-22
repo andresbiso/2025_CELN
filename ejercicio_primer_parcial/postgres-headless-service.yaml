@@ -1,0 +1,13 @@
+# Headless Service for StatefulSet DNS
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db-headless
+  namespace: ecommerce-app
+spec:
+  clusterIP: None
+  selector:
+    app: postgres-db
+  ports:
+    - port: 5432
+      targetPort: 5432

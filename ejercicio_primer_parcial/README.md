@@ -48,3 +48,35 @@ mkdir backend
 4. `npm install express`
 
 Dockerfile, Server.js, Modificar package.json
+
+# Configurar Base de Datos
+
+```sql
+CREATE TABLE inventory (
+    item_id SERIAL PRIMARY KEY,
+    item_name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    quantity INT NOT NULL,
+    category VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO inventory (item_name, description, price, quantity, category) VALUES
+('Smartphone', 'Latest model with 128GB storage', 699.99, 20, 'Electronics'),
+('Sneakers', 'Comfortable running shoes', 89.99, 50, 'Footwear'),
+('Backpack', 'Durable travel backpack with multiple compartments', 59.99, 30, 'Accessories'),
+('Apples', 'Fresh red apples', 2.99, 50, 'Fruits'),
+('Bananas', 'Organic bananas', 1.49, 30, 'Fruits'),
+('Oranges', 'Juicy oranges', 3.49, 40, 'Fruits');
+\q
+```
+
+Headless Service (postgres-db-headless) for internal Pod-to-Pod communication.
+
+ClusterIP Service (postgres-db-service) for API access.
+
+StatefulSet with persistent storage.
+
+ConfigMap for non-sensitive settings (like database name).
+
+Secret for sensitive credentials (username/password).

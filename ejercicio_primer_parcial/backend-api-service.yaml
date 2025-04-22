@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-service
+  namespace: ecommerce-app
+spec:
+  selector:
+    app: backend-api
+  ports:
+    - protocol: TCP
+      port: 80    # Service port, used by frontend
+      targetPort: 3001 # Maps to the Node.js app running inside the container
