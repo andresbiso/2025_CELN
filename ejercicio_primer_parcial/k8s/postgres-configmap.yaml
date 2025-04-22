@@ -6,4 +6,4 @@ metadata:
 data:
   DB_HOST: postgres-service # Kubernetes Service name for PostgreSQL
   DB_NAME: ecommerce_db # Database name
-  DB_PORT: 5432 # Default PostgreSQL port
+  DB_PORT: "5432" # Default PostgreSQL port

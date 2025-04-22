@@ -106,7 +106,7 @@ metadata:
 data:
   DB_HOST: postgres-service # Kubernetes Service name for PostgreSQL
   DB_NAME: ecommerce_db # Database name
-  DB_PORT: 5432 # Default PostgreSQL port
+  DB_PORT: "5432" # Default PostgreSQL port
 ```
 
 Aplicar:
@@ -196,27 +196,27 @@ spec:
             - containerPort: 5432
               name: postgres
           env:
-            - name: DB_NAME
+            - name: POSTGRES_DB
               valueFrom:
                 configMapKeyRef:
                   name: postgres-config
                   key: DB_NAME # Use existing ConfigMap key
-            - name: DB_USER
+            - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: DB_USER
-            - name: DB_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: DB_PASSWORD
-            - name: DB_HOST
+            - name: POSTGRES_HOST
               valueFrom:
                 configMapKeyRef:
                   name: postgres-config
                   key: DB_HOST
-            - name: DB_PORT
+            - name: POSTGRES_PORT
               valueFrom:
                 configMapKeyRef:
                   name: postgres-config
@@ -238,13 +238,13 @@ spec:
                 [
                   "pg_isready",
                   "-U",
-                  "$(DB_USER)",
+                  "$(POSTGRES_USER)",
                   "-d",
-                  "$(DB_NAME)",
+                  "$(POSTGRES_DB)",
                   "-h",
-                  "$(DB_HOST)",
+                  "$(POSTGRES_HOST)",
                   "-p",
-                  "$(DB_PORT)",
+                  "$(POSTGRES_PORT)",
                 ]
             initialDelaySeconds: 15
             periodSeconds: 10
@@ -255,13 +255,13 @@ spec:
                 [
                   "pg_isready",
                   "-U",
-                  "$(DB_USER)",
+                  "$(POSTGRES_USER)",
                   "-d",
-                  "$(DB_NAME)",
+                  "$(POSTGRES_DB)",
                   "-h",
-                  "$(DB_HOST)",
+                  "$(POSTGRES_HOST)",
                   "-p",
-                  "$(DB_PORT)",
+                  "$(POSTGRES_PORT)",
                 ]
             initialDelaySeconds: 30
             periodSeconds: 15
@@ -274,7 +274,7 @@ spec:
         resources:
           requests:
             storage: 1Gi # Request 1 GB persistent storage
-        storageClassName: standard # Specify if needed for your Minikube storage provisioner
+        #storageClassName: standard # Specify if needed for your Minikube storage provisioner
 ```
 
 Aplicar:
@@ -570,6 +570,12 @@ Aplicar:
 kubectl apply -f backend-api-deployment.yaml -n ecommerce-app
 ```
 
+- Esperar a que los pods que comienzan con "backend-api-" se estén ejecutando (STATUS=Running).
+
+```bash
+kubectl get pods -n ecommerce-app -l app=backend-api
+```
+
 ## Paso 4 - Aplicación Frontend
 
 ### Generar Frontend
@@ -828,6 +834,12 @@ Aplicar:
 
 ```bash
 kubectl apply -f frontend-deployment.yaml -n ecommerce-app
+```
+
+- Esperar a que los pods que comienzan con "frontend-web-" se estén ejecutando (STATUS=Running).
+
+```bash
+kubectl get pods -n ecommerce-app -l app=frontend-web
 ```
 
 ## Paso 5 - Verificación
