@@ -8,5 +8,5 @@ spec:
     app: backend-api
   ports:
     - protocol: TCP
-      port: 80    # Service port, used by frontend
+      port: 3001    # Service port, used by frontend
       targetPort: 3001 # Maps to the Node.js app running inside the container
