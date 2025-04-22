@@ -840,7 +840,7 @@ Este ejercicio simula el aspecto de in-cluster HA que es un requisito previo par
 ## Paso 8 - Limpieza
 
 ```bash
-minikube dashboard # Revisar los recursos asociados
+minikube dashboard -p multinode-cluster # Revisar los recursos asociados
 ```
 
 ```bash
