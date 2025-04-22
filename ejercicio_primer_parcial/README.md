@@ -907,7 +907,7 @@ kubectl logs <pod-name> -n ecommerce-app # Investigar problemas
 ## Paso 6 - Limpieza
 
 ```bash
-minikube dashboard # Revisar los recursos asociados
+minikube dashboard -p multinode-cluster # Revisar los recursos asociados
 ```
 
 ```bash
