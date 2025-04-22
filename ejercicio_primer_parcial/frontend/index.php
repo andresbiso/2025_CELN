@@ -56,6 +56,11 @@
         ?>
     </div>
 
-    <p style="font-size: 0.8em; color: #666; margin-top: 15px;">Server: <?php echo htmlspecialchars(gethostname()); ?></p>
+    <p style="font-size: 0.8em; color: #666; margin-top: 15px;">
+        Server Software: <?php echo htmlspecialchars($_SERVER['SERVER_SOFTWARE']); ?>
+    </p>
+    <p style="font-size: 0.8em; color: #666; margin-top: 5px;">
+        Hostname: <?php echo htmlspecialchars(gethostname()); ?>
+    </p>
 </body>
 </html>
