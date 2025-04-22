@@ -5,7 +5,7 @@ metadata:
   namespace: ecommerce-app
 spec:
   serviceName: postgres-db-headless
-  replicas: 1
+  replicas: 1 # Single replica for simplicity in Minikube HA
   selector:
     matchLabels:
       app: postgres-db
@@ -22,21 +22,21 @@ spec:
             - containerPort: 5432
               name: postgres
           env:
-            - name: POSTGRES_DB
+            - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
                   name: postgres-config
                   key: DB_NAME  # Use existing ConfigMap key
-            - name: POSTGRES_USER
+            - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgres-credentials
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
+                  name: postgres-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-credentials
-                  key: POSTGRES_PASSWORD
+                  name: postgres-secret
+                  key: DB_PASSWORD
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
@@ -57,15 +57,16 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
+          # Add Liveness/Readiness Probes (e.g., using pg_isready)
           readinessProbe:
             exec:
               command:
                 [
                   "pg_isready",
                   "-U",
-                  "$(POSTGRES_USER)",
+                  "$(DB_USER)",
                   "-d",
-                  "$(POSTGRES_DB)",
+                  "$(DB_NAME)",
                   "-h",
                   "$(DB_HOST)",
                   "-p",
@@ -80,9 +81,9 @@ spec:
                 [
                   "pg_isready",
                   "-U",
-                  "$(POSTGRES_USER)",
+                  "$(DB_USER)",
                   "-d",
-                  "$(POSTGRES_DB)",
+                  "$(DB_NAME)",
                   "-h",
                   "$(DB_HOST)",
                   "-p",
@@ -98,5 +99,5 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 1Gi
-        storageClassName: standard 
+            storage: 1Gi # Request 1 GB persistent storage
+        storageClassName: standard # Specify if needed for your Minikube storage provisioner

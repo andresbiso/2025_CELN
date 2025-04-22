@@ -4,5 +4,5 @@ metadata:
   name: api-config
   namespace: ecommerce-app
 data:
-  DB_HOST: "postgres-db-service"   # Reference the PostgreSQL ClusterIP service
-  DB_PORT: "5432"                  # PostgreSQL default port
+  DB_HOST: postgres-db-service   # Reference the PostgreSQL ClusterIP service
+  DB_PORT: 5432                  # PostgreSQL default port
