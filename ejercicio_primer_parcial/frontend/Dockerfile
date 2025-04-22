@@ -1,9 +1,7 @@
 FROM php:8.1-fpm
 
 # This variant contains PHP's FastCGI Process Manager (FPM)⁠, which is the recommended FastCGI implementation for PHP.
-# In order to use this image variant, some kind of reverse proxy (such as NGINX, Apache, or other tool which speaks the FastCGI protocol) will be required
-
-FROM php:8.1-fpm
+# In order to use this image variant, some kind of reverse proxy (such as NGINX, Apache, or other tool which speaks the FastCGI protocol) will be required.
 
 # Install required dependencies
 RUN apt-get update && apt-get install -y libpq-dev nginx supervisor

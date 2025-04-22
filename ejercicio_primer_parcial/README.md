@@ -471,7 +471,7 @@ spec:
     app: backend-api
   ports:
     - protocol: TCP
-      port: 80    # Service port, used by frontend
+      port: 3001    # Service port, used by frontend
       targetPort: 3001 # Maps to the Node.js app running inside the container
 ```
 
@@ -646,7 +646,7 @@ Crear frontend/index.php:
 </html>
 ```
 
-Crear backend/nginx.conf:
+Crear frontend/nginx.conf:
 
 ```nginx
 worker_processes auto;
@@ -660,23 +660,48 @@ http {
     keepalive_timeout 65;
 
     server {
-        listen 80;
-        server_name localhost;
+        listen 80 default_server;
         root /var/www/html;
         index index.php index.html;
 
         location / {
-            try_files $uri $uri/ =404;
+            try_files $uri /index.php$is_args$args;
         }
 
         location ~ \.php$ {
             include fastcgi_params;
-            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_pass 127.0.0.1:9000;  # Updated to use TCP instead of Unix socket
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+
+        location = /50x.html {
+            root /usr/share/nginx/html;
         }
     }
 }
+```
+
+Crear frontend/supervisord.conf:
+
+```supervisord
+[supervisord]
+nodaemon=true
+
+[program:nginx]
+command=nginx -g 'daemon off;'
+autostart=true
+autorestart=true
+
+[program:php-fpm]
+command=php-fpm
+autostart=true
+autorestart=true
 ```
 
 Crear frontend/Dockerfile:
@@ -685,30 +710,33 @@ Crear frontend/Dockerfile:
 FROM php:8.1-fpm
 
 # This variant contains PHP's FastCGI Process Manager (FPM)⁠, which is the recommended FastCGI implementation for PHP.
-# In order to use this image variant, some kind of reverse proxy (such as NGINX, Apache, or other tool which speaks the FastCGI protocol) will be required
+# In order to use this image variant, some kind of reverse proxy (such as NGINX, Apache, or other tool which speaks the FastCGI protocol) will be required.
 
 # Install required dependencies
-RUN apt-get update && apt-get install -y libpq-dev nginx
+RUN apt-get update && apt-get install -y libpq-dev nginx supervisor
 
 # Install PHP extensions for PostgreSQL
 RUN docker-php-ext-install pdo pdo_pgsql
 
-# Copy PHP source files to the container
+# Prepare working directory
 WORKDIR /var/www/html
 COPY index.php /var/www/html/index.php
-
-# Adjust permissions
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod 644 /var/www/html/index.php
 
-# Copy Nginx configuration
+# Copy configurations
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Expose port 80 for Nginx
+# Fix permissions
+RUN chown -R www-data:www-data /etc/nginx/nginx.conf
+RUN mkdir -p /run/php && chown -R www-data:www-data /run/php
+
+# Expose Nginx port
 EXPOSE 80
 
-# Start both services (PHP-FPM and Nginx)
-CMD service nginx start && php-fpm
+# Start both services using supervisor
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 ```
 
 ### Construir y cargar imagen de Docker
