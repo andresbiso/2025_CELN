@@ -16,40 +16,96 @@ El objetivo es entregar un sistema funcional, observable y preparado para futura
 2. Server (Node.js/Express): Una API simple que se conecta a la base de datos PostgreSQL para recuperar/almacenar datos. Se ejecuta en una implementación con múltiples réplicas.
 3. Base de datos (PostgreSQL): Almacena datos de la aplicación. Se ejecuta como StatefulSet con PersistentVolumeClaim.
 
+## Conceptos
+
+A continuación, paso a dejar una breve explicación de cada uno de los conceptos utilizados en el desarrollo de la guía:
+
+**Docker:** Plataforma que permite empaquetar aplicaciones y sus dependencias en unidades aisladas llamadas contenedores. Facilita el despliegue, escalabilidad y portabilidad entre distintos entornos.
+
+**Kubernetes:** Sistema de orquestación que automatiza la gestión, escalado y despliegue de aplicaciones en contenedores. Proporciona herramientas para asegurar disponibilidad, distribución eficiente de recursos y resiliencia en entornos de producción.
+Este sistema hace uso principalmente de clústeres, nodos, pods y contenedores.
+
+> [!Note]
+> Clúster: Está compuesto por múltiples nodos que trabajan juntos para ejecutar aplicaciones en contenedores.
+> Nodos: Son los servidores dentro del clúster. Hay dos tipos: Nodo maestro (Control Plane) que administra el estado del clúster, coordina los nodos y maneja la distribución de aplicaciones y los nodos de trabajo que ejecutan los contenedores de las aplicaciones.
+> Contenedores: Son unidades independientes que contienen una aplicación y sus dependencias. Son gestionados dentro de Pods.
+> Pods: La unidad mínima de Kubernetes. Cada Pod puede contener uno o varios contenedores que comparten recursos y red.
+
+**Minikube:** Herramienta para ejecutar un clúster de Kubernetes en una máquina local. Se puede configurar con uno o con múltiples nodos para simular un entorno más realista.
+Simplifica el proceso de aprendizaje y experimentación con Kubernetes al proporcionar un entorno manejable sin las complejidades de un clúster a gran escala.
+
+**Deployments:** Controlan el despliegue y gestión de aplicaciones en Kubernetes, permitiendo actualizaciones y escalamiento automático. Hacemos uso de estos para el frontend y backend con múltiples réplicas.
+
+**StatefulSet:** Tipo de controlador que gestiona aplicaciones con estado, asegurando que cada instancia tenga una identidad única y persistencia de datos, como en el caso de la base de datos PostgreSQL.
+
+**PersistentVolumeClaims (PVC):** Mecanismo para solicitar almacenamiento persistente en Kubernetes, garantizando que los datos de la base de datos no se pierdan tras reinicios o escalamiento.
+Kubernetes asigna un PV que cumpla con las características solicitadas en el PVC, asegurando que la aplicación reciba almacenamiento persistente.
+
+**PersistentVolume (PV):** Es el recurso de almacenamiento físico dentro del clúster. Puede estar respaldado por discos locales, NFS, almacenamiento en la nube, etc.
+
+**ConfigMaps:** Recurso para gestionar la configuración de aplicaciones de manera externa, evitando la necesidad de modificar contenedores directamente.
+
+**Secrets:** Recurso diseñados para manejar información sensible como credenciales y contraseñas, protegiendo los datos de la base de datos.
+
+**LivenessProbes:** Comprobaciones automáticas para verificar que un contenedor sigue funcionando correctamente. Si falla, Kubernetes reinicia el contenedor.
+
+**ReadinessProbes:** Indican cuándo un contenedor está listo para recibir tráfico, evitando que los servicios envíen solicitudes a instancias aún no preparadas.
+
+**Requests y Limits de CPU/Memoria:** Controlan la asignación de recursos en Kubernetes, evitando que un contenedor consuma más recursos de los permitidos y asegurando una distribución eficiente.
+
+**TopologySpreadConstraints:** Reglas para distribuir los pods en distintos nodos del clúster, mejorando la tolerancia a fallos y la resiliencia de la aplicación.
+
+**Service:** Es un recurso en Kubernetes que permite exponer aplicaciones dentro del clúster y gestionar la comunicación entre pods. Actúa como un punto de acceso estable, distribuyendo tráfico hacia las réplicas de un Deployment o StatefulSet según la configuración.
+
+**Headless Service:** Variante de un Service que no asigna una dirección IP estable. En lugar de eso, permite que las aplicaciones accedan directamente a los pods individuales, suele ser utilizado con bases de datos y servicios que requieren conocimiento de cada instancia en el clúster.
+
 ## Pasos Previos
+
+> [!IMPORTANT]  
+> Esta guía supone se cuenta con un dispositivo ejecutando el sistema operativo Ubuntu.
+> Se supone de que se cuenta con un equipo con las especificaciones necesarias para poder realizar la instalación del etorno.
+> Se recomienda un mínimo de unos 40 GB de almacenamiento disponible, contar con al menos una CPU de 2 cores de una generación reciente, contar con al menos 4 GiB de memoria RAM disponible y que el sistema operativo instalado pueda hacer uso de docker.
 
 1. Se debe contar con node y npm instalados antes de continuar.
 
 - https://nodejs.org/en/download
-- Options: v22.14.0 (LTS); Linux; nvm; npm
+- Opciones recomendadas: v22.14.0 (LTS) para Linux usando nvm y npm.
 
 ```bash
-# Download and install nvm:
+# Descargar e instalar nvm:
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
 
-# in lieu of restarting the shell
+# Cargar nvm en la sesión actual sin reiniciar la terminal
 \. "$HOME/.nvm/nvm.sh"
 
-# Download and install Node.js:
+# Descargar e instalar Node.js:
 nvm install 22
 
-# Verify the Node.js version:
-node -v # Should print "v22.14.0".
-nvm current # Should print "v22.14.0".
+# Verificar versión de Node.js:
+node -v
+nvm current
 
-# Verify npm version:
-npm -v # Should print "10.9.2".
+# Verifricar versión de npm:
+npm -v
 ```
 
 2. Crear carpetas del proyecto.
 
 ```bash
-mkdir ecommerce-app
+mkdir ecommerce-app    # Carpeta raíz del proyecto
 cd ecommerce-app
-mkdir backend
-mkdir frontend
-mkdir k8s
+mkdir backend          # Código del backend (API)
+mkdir frontend         # Código del frontend
+mkdir k8s              # Archivos de configuración de Kubernetes
 ```
+
+3. Instalar docker: https://docs.docker.com/engine/install/ubuntu/
+4. Instalar kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
+5. Instalar minikube: https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fdebian+package
+6. En una terminal ejecutar: `sudo usermod -aG docker $USER && newgrp docker`
+
+> [!NOTE]
+> Al finalizar estos pasos, tendremos un entorno local que puede hacer uso de esta guía para la configuración del sistema de ecommerce.
 
 ## Paso 1 - Ambiente local con minikube
 
