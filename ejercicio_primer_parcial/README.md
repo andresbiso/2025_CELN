@@ -62,10 +62,11 @@ Kubernetes asigna un PV que cumpla con las características solicitadas en el PV
 
 ## Pasos Previos
 
-> [!IMPORTANT]  
-> Esta guía supone se cuenta con un dispositivo ejecutando el sistema operativo Ubuntu.
-> Se supone de que se cuenta con un equipo con las especificaciones necesarias para poder realizar la instalación del etorno.
-> Se recomienda un mínimo de unos 40 GB de almacenamiento disponible, contar con al menos una CPU de 2 cores de una generación reciente, contar con al menos 4 GiB de memoria RAM disponible y que el sistema operativo instalado pueda hacer uso de docker.
+> [!IMPORTANT]
+>
+> - Esta guía supone se cuenta con un dispositivo ejecutando el sistema operativo Ubuntu.
+> - Se supone de que se cuenta con un equipo con las especificaciones necesarias para poder realizar la instalación del etorno.
+> - Se recomienda un mínimo de unos 40 GB de almacenamiento disponible, contar con al menos una CPU de 2 cores de una generación reciente, contar con al menos 4 GiB de memoria RAM disponible y que el sistema operativo instalado pueda hacer uso de docker.
 
 1. Se debe contar con node y npm instalados antes de continuar.
 
