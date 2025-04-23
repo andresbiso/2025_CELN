@@ -27,10 +27,10 @@ Este sistema hace uso principalmente de clústeres, nodos, pods y contenedores.
 
 > [!Note]
 >
-> - Clúster: Está compuesto por múltiples nodos que trabajan juntos para ejecutar aplicaciones en contenedores.
-> - Nodos: Son los servidores dentro del clúster. Hay dos tipos: Nodo maestro (Control Plane) que administra el estado del clúster, coordina los nodos y maneja la distribución de aplicaciones y los nodos de trabajo que ejecutan los contenedores de las aplicaciones.
-> - Contenedores: Son unidades independientes que contienen una aplicación y sus dependencias. Son gestionados dentro de Pods.
+> - Clúster: Es un nodo o un conjunto de múltiples nodos compuestos por pods que trabajan juntos para ejecutar aplicaciones en contenedores.
+> - Nodos: Es una instancia de una unidad de cómputo dentro del clúster. Están compuestos por pods.
 > - Pods: La unidad mínima de Kubernetes. Cada Pod puede contener uno o varios contenedores que comparten recursos y red.
+> - Contenedores: Son unidades independientes que contienen una aplicación y sus dependencias. Son gestionados dentro de Pods.
 
 **Minikube:** Herramienta para ejecutar un clúster de Kubernetes en una máquina local. Se puede configurar con uno o con múltiples nodos para simular un entorno más realista.
 Simplifica el proceso de aprendizaje y experimentación con Kubernetes al proporcionar un entorno manejable sin las complejidades de un clúster a gran escala.
