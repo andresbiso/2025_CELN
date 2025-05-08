@@ -107,8 +107,8 @@ A continuación, se indican una guías para la instalación de [Apache Cloud Sta
 > [!IMPORTANT]
 > Seguir los pasos indicados para Ubuntu.
 
-Guía recomendada: [cloud_stack_intallation_guide.pdf](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_intallation_guide.pdf))
-Guías alternativas: [cloud_stack_alternative_installation_guides.md](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_alternative_installation_guides.md)
+- Guía recomendada: [cloud_stack_intallation_guide.pdf](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_intallation_guide.pdf))
+- Guías alternativas: [cloud_stack_alternative_installation_guides.md](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_alternative_installation_guides.md)
 
 ## ¿Cómo levantar el entorno?
 
