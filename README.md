@@ -42,7 +42,7 @@ brew install --cask virtualbox
    2. Configurarlo con 128 MB de memoria gráfica.
    3. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles)
 3. Una vez finalizada la instalación, modificar la vm para que use dos cpu cores.
-4. Instalar herramientas: build-essential, curl.
+4. Instalar herramientas: `sudo apt install build-essential curl`
 5. Instalar snaps (App Center): visual studio code, postman.
 6. Instalar Guest Additions de virtualbox en la vm.
    1. La iso se monta en /media/nube/VBox_GAs_x.y.z
@@ -95,14 +95,12 @@ sudo usermod -aG docker $USER && newgrp docker
    4. No es necesario configurar OpenSSH a través del instalador.
    5. No es necesario configurar el disco como LVM.
 3. Una vez finalizada la instalación, modificar la vm para que use dos cpu cores.
-4. Instalar herramientas: build-essential, curl.
+4. Instalar herramientas: `sudo apt install build-essential curl`
 5. Instalar Guest Additions de virtualbox en la vm.
-   1. La iso se monta en /media/nube/VBox_GAs_x.y.z
-   2. Navegar en una terminal a esa ruta y ejecutar: sudo ./VBoxLinuxAdditions.run
-6. Configurar usuario: sudo adduser nube vboxsf
-   1. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
-   2. Configurar clipboard compartido: https://superuser.com/questions/42134/how-do-i-enable-the-shared-clipboard-in-virtualbox
-   3. Configurar carpeta compartida: https://askubuntu.com/questions/161759/how-to-access-a-shared-folder-in-virtualbox
+   1. [Guía de instalación y configuración](https://gist.github.com/magnetikonline/1e7e2dbd1b288fecf090f1ef12f0c80b)
+6. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
+   1. Configurar clipboard compartido: https://superuser.com/questions/42134/how-do-i-enable-the-shared-clipboard-in-virtualbox
+   2. Configurar carpeta compartida: https://askubuntu.com/questions/161759/how-to-access-a-shared-folder-in-virtualbox
 
 A continuación, se indican una guías para la instalación de [Apache Cloud Stack](https://cloudstack.apache.org/) en la VM.
 
@@ -111,6 +109,18 @@ A continuación, se indican una guías para la instalación de [Apache Cloud Sta
 
 - Guía recomendada: [cloud_stack_intallation_guide.pdf](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_intallation_guide.pdf)
 - Guías alternativas: [cloud_stack_alternative_installation_guides.md](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_alternative_installation_guides.md)
+
+## Comandos Útiles
+
+```bash
+# Reiniciar ubuntu server
+sudo reboot
+```
+
+```bash
+# Apagar ubuntu server
+sudo shutdown now
+```
 
 ## ¿Cómo levantar el entorno?
 
