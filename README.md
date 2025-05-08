@@ -9,7 +9,8 @@
 
 - [Acerca De](#about)
 - [Aplicaciones Utilizadas](#applications)
-- [Configurar y levantar el entorno](#configure_run_environment)
+- [Configurar y levantar el entorno - Primera parte de la materia](#configure_run_environment_1)
+- [Configurar y levantar el entorno - Segunda parte de la materia](#configure_run_environment_2)
 - [Autor](#author)
 - [Reconocimientos](#acknowledgement)
 
@@ -29,7 +30,7 @@ Recomiendo utilizar [homebrew](https://brew.sh/) para instalar estos paquetes:
 brew install --cask virtualbox
 ```
 
-# :hammer: Configurar y Levantar el entorno <a name = "configure_run_environment"></a>
+# :hammer: Configurar y Levantar el entorno - Primera parte de la materia <a name = "configure_run_environment_1"></a>
 
 - Instalar el VirtualBox Extension Pack: https://www.virtualbox.org/wiki/Downloads
 
@@ -79,6 +80,42 @@ sudo usermod -aG docker $USER && newgrp docker
 
 - https://cyberchef.io/
 - Linux: `echo -n "value" | base64`
+
+# :hammer: Configurar y Levantar el entorno - Segunda parte de la materia <a name = "configure_run_environment_2"></a>
+
+- Instalar el VirtualBox Extension Pack: https://www.virtualbox.org/wiki/Downloads
+
+## ¿Cómo configurar el entorno?
+
+1. Crear VDI con 45GB e indicar que ocupe todo el espacio.
+2. Descargar e instalar Ubuntu Server LTS (amd64).
+   1. Importante indicarle 4GiB de memoria RAM y 1 CPU core.
+   2. Configurarlo con 128 MB de memoria gráfica.
+   3. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles)
+3. Una vez finalizada la instalación, modificar la vm para que use dos cpu cores.
+4. Instalar herramientas: build-essential, curl.
+5. Instalar Guest Additions de virtualbox en la vm.
+   1. La iso se monta en /media/nube/VBox_GAs_x.y.z
+   2. Navegar en una terminal a esa ruta y ejecutar: sudo ./VBoxLinuxAdditions.run
+6. Configurar usuario: sudo adduser nube vboxsf
+   1. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
+   2. Configurar clipboard compartido: https://superuser.com/questions/42134/how-do-i-enable-the-shared-clipboard-in-virtualbox
+   3. Configurar carpeta compartida: https://askubuntu.com/questions/161759/how-to-access-a-shared-folder-in-virtualbox
+
+A continuación, se indican una guías para la instalación de [Apache Cloud Stack](https://cloudstack.apache.org/) en la VM.
+
+> [!IMPORTANT]
+> Seguir los pasos indicados para Ubuntu.
+
+Guía recomendada: [cloud_stack_intallation_guide.pdf](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_intallation_guide.pdf))
+Guías alternativas: [cloud_stack_alternative_installation_guides.md](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_alternative_installation_guides.md)
+
+## ¿Cómo levantar el entorno?
+
+1. Abrir una terminal.
+   ...
+
+Con esto tendríamos los mínimo necesario para levantar los ejercicios.
 
 # :speech_balloon: Autor <a name = "author"></a>
 
