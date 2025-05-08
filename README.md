@@ -87,11 +87,13 @@ sudo usermod -aG docker $USER && newgrp docker
 
 ## ¿Cómo configurar el entorno?
 
-1. Crear VDI con 45GB e indicar que ocupe todo el espacio.
+1. Crear VDI con 40GB e indicar que ocupe todo el espacio (Marcar "Pre-allocate Full Size").
 2. Descargar e instalar Ubuntu Server LTS (amd64).
    1. Importante indicarle 4GiB de memoria RAM y 1 CPU core.
    2. Configurarlo con 128 MB de memoria gráfica.
-   3. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles)
+   3. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles).
+   4. No es necesario configurar OpenSSH a través del instalador.
+   5. No es necesario configurar el disco como LVM.
 3. Una vez finalizada la instalación, modificar la vm para que use dos cpu cores.
 4. Instalar herramientas: build-essential, curl.
 5. Instalar Guest Additions de virtualbox en la vm.
