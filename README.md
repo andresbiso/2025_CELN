@@ -30,9 +30,15 @@ Recomiendo utilizar [homebrew](https://brew.sh/) para instalar estos paquetes:
 brew install --cask virtualbox
 ```
 
-# :hammer: Configurar y Levantar el entorno - Primera parte de la materia <a name = "configure_run_environment_1"></a>
-
 - Instalar el VirtualBox Extension Pack: https://www.virtualbox.org/wiki/Downloads
+
+- [vmware-fusion](https://formulae.brew.sh/cask/vmware-fusion#default)
+
+```
+brew install --cask vmware-fusion
+```
+
+# :hammer: Configurar y Levantar el entorno - Primera parte de la materia <a name = "configure_run_environment_1"></a>
 
 ## ¿Cómo configurar el entorno?
 
@@ -83,41 +89,25 @@ sudo usermod -aG docker $USER && newgrp docker
 
 # :hammer: Configurar y Levantar el entorno - Segunda parte de la materia <a name = "configure_run_environment_2"></a>
 
-- Instalar el VirtualBox Extension Pack: https://www.virtualbox.org/wiki/Downloads
+> [!NOTE]
+> Para esta segunda parte vamos a estar usando VMWare Fusion Pro.
+> Esto se debe a que VirtualBox todavía no soporta Nested Virt en macOS.
 
 ## ¿Cómo configurar el entorno?
 
-1. Crear VDI con 40GB e indicar que ocupe todo el espacio (Marcar "Pre-allocate Full Size").
-2. Descargar e instalar Ubuntu Server LTS (amd64).
-   1. Importante indicarle 4GiB de memoria RAM y 1 CPU core.
-   2. Configurarlo con 128 MB de memoria gráfica.
-   3. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles).
-   4. No es necesario configurar OpenSSH a través del instalador.
-   5. No es necesario configurar el disco como LVM.
-3. Una vez finalizada la instalación, modificar la vm para que use dos cpu cores.
+1. Descargar Ubuntu Server LTS (amd64)
+2. Mover la ISO a VMWare Fusion Pro.
+   1. Se debería configurar automáticamente con: 20GB de disco, 4GB de memoria RAM y 2 CPU core.
+   2. Ir a "Processors & Memory", ir a opciones avanzadas y activar "Enable hypervisor...".
+   3. Ir a "Network Adapter" y seleccionar Autodetect para el modo bridged networking.
+   4. Ir a "Hard Disk", aumentar tamaño de disco a 40GB y marcar "pre-allocate disk space".
+3. Instalar Ubuntu Server.
+   1. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles).
+   2. No es necesario configurar OpenSSH a través del instalador.
+   3. No es necesario configurar el disco como LVM.
 4. Instalar herramientas: `sudo apt install build-essential curl`
-5. Instalar Guest Additions de virtualbox en la vm.
-
-```bash
-# [Guía de instalación y configuración](https://gist.github.com/magnetikonline/1e7e2dbd1b288fecf090f1ef12f0c80b)
-
-# Start VM, goto Devices - Insert Guest Additions CD image to mount the ISO image.
-# From the terminal, run the following commands:
-sudo su
-apt install gcc make
-mkdir --parents /media/cdrom
-mount /dev/cdrom /media/cdrom
-/media/cdrom/VBoxLinuxAdditions.run
-sudo reboot
-
-# After reboot
-modinfo vboxguest
-sudo usermod --append --groups vboxsf -- "$USER"
-cat /etc/group | grep "$USER"
-# Host shares should now be mounted in Ubuntu guest under /media via the installed VBoxService service, set to start on system boot-up.
-```
-
-6. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
+5. Shared folders: https://techdocs.broadcom.com/us/en/vmware-cis/desktop-hypervisors/fusion-pro/13-0/using-vmware-fusion/sharing-files-between-windows-and-your-mac/add-a-shared-folder.html
+   1. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
 
 A continuación, se indican una guías para la instalación de [Apache Cloud Stack](https://cloudstack.apache.org/) en la VM.
 
