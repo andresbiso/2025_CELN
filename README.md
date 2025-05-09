@@ -119,10 +119,10 @@ A continuación, se indican una guías para la instalación de [Apache Cloud Sta
 
 ## Guía Instalación Actualizada
 
-- Esta es la guía recomendada pero actualizada para Ubuntu 24.04 LTS.
+- Esta es la guía recomendada pero actualizada para Ubuntu Server 24.04 LTS.
 
 > [!NOTE]
-> Configurar VM Ubuntu Server en modo "bridged mode". Asegurarse quue Adapter 1 esté en modo Bridged Adapter.
+> Configurar VM Ubuntu Server en modo "bridged mode".
 
 ```bash
 sudo add-apt-repository universe
