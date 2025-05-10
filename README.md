@@ -90,24 +90,29 @@ sudo usermod -aG docker $USER && newgrp docker
 # :hammer: Configurar y Levantar el entorno - Segunda parte de la materia <a name = "configure_run_environment_2"></a>
 
 > [!NOTE]
-> Para esta segunda parte vamos a estar usando VMWare Fusion Pro.
+> Para esta segunda parte vamos a estar usando VMware Fusion Pro.
 > Esto se debe a que VirtualBox todavía no soporta Nested Virt en macOS.
 
 ## ¿Cómo configurar el entorno?
 
 1. Descargar Ubuntu Server LTS (amd64)
-2. Mover la ISO a VMWare Fusion Pro.
-   1. Se debería configurar automáticamente con: 20GB de disco, 4GB de memoria RAM y 2 CPU core.
+2. Mover la ISO a VMware Fusion Pro.
+   1. Se debería configurar automáticamente con: 20GB de disco, 4096MiB (4GiB) de memoria RAM y 2 CPU core.
    2. Ir a "Processors & Memory", ir a opciones avanzadas y activar "Enable hypervisor...".
-   3. Ir a "Network Adapter" y seleccionar Autodetect para el modo bridged networking.
-   4. Ir a "Hard Disk", aumentar tamaño de disco a 40GB y marcar "pre-allocate disk space".
+   3. Ir a "Processors & Memory", incrementar memoria a 8192MiB (8GiB).
+   4. Ir a "Network Adapter" y seleccionar Autodetect para el modo bridged networking.
+   5. Ir a "Hard Disk", aumentar tamaño de disco a 40GB y marcar "pre-allocate disk space".
 3. Instalar Ubuntu Server.
    1. Configurar usuario y contraseña con el valor "nube" (sin comillas dobles).
    2. No es necesario configurar OpenSSH a través del instalador.
    3. No es necesario configurar el disco como LVM.
-4. Instalar herramientas: `sudo apt install build-essential curl`
-5. Shared folders: https://techdocs.broadcom.com/us/en/vmware-cis/desktop-hypervisors/fusion-pro/13-0/using-vmware-fusion/sharing-files-between-windows-and-your-mac/add-a-shared-folder.html
-   1. Con esto ya podremos compartir carpetas entre el host y el guest a través de la carpeta /media.
+4. Instalar herramientas: `sudo apt update && sudo apt install -y build-essential binutils linux-headers-$(uname -r)`
+5. Instalar VMware Tools: https://knowledge.broadcom.com/external/article/315313/installing-VMware-tools-in-an-ubuntu-vir.html
+   1. Hay veces que se instala automáticamente. Revisar con: `VMware-toolbox-cmd -v`
+6. Habilitar carpetas compartidas: https://techdocs.broadcom.com/us/en/VMware-cis/desktop-hypervisors/fusion-pro/13-0/using-VMware-fusion/sharing-files-between-windows-and-your-mac/add-a-shared-folder.html
+   1. Seguir los pasos para que se hagan auto mount modificando /etc/fstab: https://askubuntu.com/a/1051620
+   2. Luego de ejecutar `sudo mount -a` y `systemctl daemon-reload` deberíamos ver las carpetas compartidas en /mnt/hgfs/.
+7. Habilitar clipboard compartido: Con la VM apagada ir a settings -> isolation y habilitar las opciones de clipboard.
 
 A continuación, se indican una guías para la instalación de [Apache Cloud Stack](https://cloudstack.apache.org/) en la VM.
 
