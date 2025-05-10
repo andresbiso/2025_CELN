@@ -90,8 +90,9 @@ sudo usermod -aG docker $USER && newgrp docker
 # :hammer: Configurar y Levantar el entorno - Segunda parte de la materia <a name = "configure_run_environment_2"></a>
 
 > [!NOTE]
-> Para esta segunda parte vamos a estar usando VMware Fusion Pro.
-> Esto se debe a que VirtualBox todavía no soporta Nested Virt en macOS.
+>
+> - Para esta segunda parte vamos a estar usando VMware Fusion Pro.
+> - Esto se debe a que VirtualBox todavía no soporta Nested Virt en macOS.
 
 ## ¿Cómo configurar el entorno?
 
@@ -117,8 +118,9 @@ sudo usermod -aG docker $USER && newgrp docker
 A continuación, se indican una guías para la instalación de [Apache Cloud Stack](https://cloudstack.apache.org/) en la VM.
 
 > [!IMPORTANT]
-> Recomiendo seguir la guía actualizada que se puede encontrar en este mismo archivo.
-> En caso de querer hacer uso de las otras guías, seguir los pasos para Ubuntu.
+>
+> - Recomiendo seguir la guía actualizada que se puede encontrar en este mismo archivo.
+> - En caso de querer hacer uso de las otras guías, seguir los pasos para Ubuntu.
 
 - Guía recomendada: [cloud_stack_intallation_guide.pdf](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_intallation_guide.pdf)
 - Guías alternativas: [cloud_stack_alternative_installation_guides.md](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_alternative_installation_guides.md)
@@ -275,10 +277,11 @@ binlog-format = 'ROW'
 ```
 
 > [!NOTE]
-> innodb_rollback_on_timeout=1: Esto garantiza que las transacciones se reviertan si alcanzan un tiempo de espera. Es una buena práctica para la consistencia de los datos.
-> innodb_lock_wait_timeout=600: Define el tiempo de espera para los bloqueos de fila.
-> max_connections=350: Establece el número máximo de conexiones simultáneas.
-> log-bin=mysql-bin & binlog-format='ROW': Habilitan el registro binario y la replicación basada en filas, lo que es útil para la recuperación en un punto específico en el tiempo.
+>
+> - innodb_rollback_on_timeout=1: Esto garantiza que las transacciones se reviertan si alcanzan un tiempo de espera. Es una buena práctica para la consistencia de los datos.
+> - innodb_lock_wait_timeout=600: Define el tiempo de espera para los bloqueos de fila.
+> - max_connections=350: Establece el número máximo de conexiones simultáneas.
+> - log-bin=mysql-bin & binlog-format='ROW': Habilitan el registro binario y la replicación basada en filas, lo que es útil para la recuperación en un punto específico en el tiempo.
 
 ```bash
 sudo systemctl restart mysql
