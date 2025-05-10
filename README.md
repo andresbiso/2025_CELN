@@ -117,12 +117,13 @@ sudo usermod -aG docker $USER && newgrp docker
 A continuación, se indican una guías para la instalación de [Apache Cloud Stack](https://cloudstack.apache.org/) en la VM.
 
 > [!IMPORTANT]
-> Seguir los pasos indicados para Ubuntu.
+> Recomiendo seguir la guía actualizada que se puede encontrar en este mismo archivo.
+> En caso de querer hacer uso de las otras guías, seguir los pasos para Ubuntu.
 
 - Guía recomendada: [cloud_stack_intallation_guide.pdf](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_intallation_guide.pdf)
 - Guías alternativas: [cloud_stack_alternative_installation_guides.md](https://github.com/andresbiso/2025_CELN/blob/main/0_resources/cloud_stack_alternative_installation_guides.md)
 
-## Guía Instalación Actualizada
+## Guía de instalación y configuración de CloudStack (Actualizada)
 
 - Esta es la guía recomendada pero actualizada para Ubuntu Server 24.04 LTS.
 
@@ -167,7 +168,7 @@ ls -l /etc/netplan/
 ```
 
 > [!NOTE]
-> Reemplazar “enp0s3” con la interface ethernet por defecto.
+> Reemplazar “ens33” con la interface ethernet por defecto.
 
 ```bash
 # Revisar nombre interface
@@ -181,7 +182,7 @@ network:
   version: 2
   renderer: networkd
   ethernets:
-    enp0s3:
+    ens33:
       dhcp4: false
       dhcp6: false
       optional: true
@@ -193,7 +194,7 @@ network:
           via: 192.168.1.1 # Your physical/home router
       nameservers:
         addresses: [8.8.8.8]
-      interfaces: [enp0s3]
+      interfaces: [ens33]
       dhcp4: false
       dhcp6: false
       parameters:
@@ -204,14 +205,14 @@ network:
 ```bash
 netplan generate
 netplan apply
-# Si se cae la conexión en este punto,
-# volver a conectarse por ssh pero haciendo uso de la nueba ip.
-sudo reboot
+# Si se cae la conexión en este punto:
+sudo reboot # Dentro de la VM
 ```
 
 ```bash
 # Volver a conectarse por ssh pero con la nueva ip
 ip a # Tomar nota de la ip
+ssh-keygen -R your_server_ip # Desde fuera de la vm remover la clave desactualizada
 ssh root@your_server_ip # Desde fuera de la vm ejecutar este comando para probar el ssh
 # Responder yes
 ```
@@ -220,18 +221,21 @@ ssh root@your_server_ip # Desde fuera de la vm ejecutar este comando para probar
 # Cambiar nombre hostname
 hostname --fqdn # revisar hostname actual
 hostnamectl set-hostname server.local --static
-sudo reboot
+
 hostname --fqdn # revisar cambio en hostname
 ```
 
 ```bash
 # Instalar Chrony para activar NTP para sincronización de tiempo
-apt install chrony
+apt install chrony -y
+# Revisar que chronyd esté levantado y responda a los comandos
+systemctl status chronyd
+chronyc tracking
 ```
 
 ```bash
 # Configurar storage NFS
-apt install nfs-kernel-server quota
+apt install nfs-kernel-server quota -y
 # Create exports:
 echo "/export/primary *(rw,async,no_root_squash,no_subtree_check)" >> /etc/exports
 echo "/export/secondary *(rw,async,no_root_squash,no_subtree_check)" >> /etc/exports
@@ -248,7 +252,7 @@ service nfs-kernel-server restart
 ```bash
 # Instalación MySQL
 apt update -y
-apt install mysql-server
+apt install mysql-server -y
 # Tratar de conectarse como root a mysql.
 # En general, no tiene un password asociado en una instalación de cero.
 # sudo mysql -u root
@@ -270,6 +274,12 @@ log-bin=mysql-bin
 binlog-format = 'ROW'
 ```
 
+> [!NOTE]
+> innodb_rollback_on_timeout=1: Esto garantiza que las transacciones se reviertan si alcanzan un tiempo de espera. Es una buena práctica para la consistencia de los datos.
+> innodb_lock_wait_timeout=600: Define el tiempo de espera para los bloqueos de fila.
+> max_connections=350: Establece el número máximo de conexiones simultáneas.
+> log-bin=mysql-bin & binlog-format='ROW': Habilitan el registro binario y la replicación basada en filas, lo que es útil para la recuperación en un punto específico en el tiempo.
+
 ```bash
 sudo systemctl restart mysql
 ```
@@ -287,7 +297,7 @@ sudo apt update
 ```
 
 ```bash
-# Instalar cloudstack management server
+# Instalar CloudStack management server
 sudo apt -y install cloudstack-management
 update-alternatives --config java # verificar java 17
 # cloudstack-setup-databases cloud:password@localhost --deploy-as=root:<root password, default blank> -i <cloudbr0 IP here>
@@ -298,7 +308,7 @@ cloudstack-setup-management
 ```bash
 # Instalar KVM
 # Install KVM and CloudStack agent, configure libvirt:
-apt install qemu-kvm cloudstack-agent
+apt install qemu-kvm cloudstack-agent -y
 # Enable VNC for console proxy:
 sed -i -e 's/\#vnc_listen.*$/vnc_listen = "0.0.0.0"/g' /etc/libvirt/qemu.conf
 # Configure default libvirtd config
@@ -316,6 +326,23 @@ apparmor_parser -R /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper
 # Check KVM is running
 lsmod | grep kvm
 ```
+
+A partir de este momento CloudStack ya está se encuentra instalado.
+
+> [!IMPORTANT]
+> Se recomienda en este momento:
+>
+> 1. Apagar la máquina virtual.
+> 2. Realizar un snapshot de la VM antes de continuar con la configuración.
+
+## Verificar acceso a CloudStack
+
+> [!NOTE]
+> Nos manejaremos con la interfaz web expuesta a través de un navegador web.
+
+1. En un navegador web acceder a http://192.168.1.2:8080/client/
+2. Acceder con username = "admin" y password = "password" (sin las comillas dobles).
+3. Verificar que el navegador nos muestre el dashboard de CloudStack.
 
 ## Comandos Útiles
 
