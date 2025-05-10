@@ -340,7 +340,7 @@ A partir de este momento CloudStack ya está se encuentra instalado.
 > [!NOTE]
 > Nos manejaremos con la interfaz web expuesta a través de un navegador web.
 
-1. En un navegador web acceder a http://192.168.1.2:8080/client/
+1. En un navegador web ir a http://192.168.1.2:8080/client/
 2. Acceder con username = "admin" y password = "password" (sin las comillas dobles).
 3. Verificar que el navegador nos muestre el dashboard de CloudStack.
 
