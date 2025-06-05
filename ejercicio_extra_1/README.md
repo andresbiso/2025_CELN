@@ -45,7 +45,7 @@ Traffic types - [GUEST, MANAGEMENT, PUBLIC]
 ```
 
 5. Hacer click en "Next".
-6. En "public traffic" agregarr los siguientes valores:
+6. En "public traffic" agregar los siguientes valores:
 
 ```config
 Gateway - 192.168.1.1
